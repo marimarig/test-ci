@@ -1,11 +1,11 @@
-name: Android CI
-
 on:
   push:
-    branches: master
+    branches:
+      - master
     tags:
       - v*
 
+jobs:
   release_build:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
@@ -27,10 +27,10 @@ on:
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
 
-      #1
+      #1     
       - name: Decode Keystore
         env:
-          ENCODED_STRING: ${{ secrets.KEYSTORE}}
+          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
           SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
 
         run: |
@@ -53,6 +53,7 @@ on:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         run: ./gradlew bundleRelease
+
       #3
       - name: Upload Release Build to Artifacts
         uses: actions/upload-artifact@v3
@@ -61,7 +62,8 @@ on:
           paths: |
             app/build/outputs/apk/release/
             app/build/outputs/bundle/release/
-      #4
+
+      #4      
       - name: Create Github Release
         uses: softprops/action-gh-release@v1
         with:
