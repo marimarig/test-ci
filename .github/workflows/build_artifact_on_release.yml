@@ -59,9 +59,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: release-artifacts
-          paths: |
+          path: |
             app/build/outputs/apk/release/
             app/build/outputs/bundle/release/
+          if-no-files-found: warn
 
       #4      
       - name: Create Github Release
