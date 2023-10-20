@@ -34,6 +34,9 @@ jobs:
           echo $ENCODED_STRING > keystore-b64.txt
           base64 -d keystore-b64.txt > $SIGNING_KEY_STORE_PATH
 
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       #2
       - name: Build Release apk
         env:
