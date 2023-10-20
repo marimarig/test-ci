@@ -1,11 +1,12 @@
 on:
   push:
-    branches:
-      - main
+    branches: main
+    tags:
+      - v*
 
-jobs:
   release_build:
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
 
     steps:
       - uses: actions/checkout@v2.6.0
@@ -24,7 +25,7 @@ jobs:
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
 
-      #1     
+      #1
       - name: Decode Keystore
         env:
           ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
@@ -33,9 +34,6 @@ jobs:
         run: |
           echo $ENCODED_STRING > keystore-b64.txt
           base64 -d keystore-b64.txt > $SIGNING_KEY_STORE_PATH
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
 
       #2
       - name: Build Release apk
@@ -53,18 +51,15 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         run: ./gradlew bundleRelease
-
       #3
       - name: Upload Release Build to Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: release-artifacts
-          path: |
+          paths: |
             app/build/outputs/apk/release/
             app/build/outputs/bundle/release/
-          if-no-files-found: warn
-
-      #4      
+      #4
       - name: Create Github Release
         uses: softprops/action-gh-release@v1
         with:
@@ -73,6 +68,4 @@ jobs:
           files: |
             app/build/outputs/apk/release/app-release.apk
             app/build/outputs/bundle/release/app-release.aab
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
