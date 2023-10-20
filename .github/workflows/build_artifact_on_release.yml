@@ -32,7 +32,7 @@ jobs:
       #1
       - name: Decode Keystore
         env:
-          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
           SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
 
         run: |
@@ -64,9 +64,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: release-artifacts
-          paths: |
+          path: |
             app/build/outputs/apk/release/
             app/build/outputs/bundle/release/
+
       #4
       - name: Create Github Release
         uses: softprops/action-gh-release@v1
