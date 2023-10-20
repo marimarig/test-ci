@@ -2,23 +2,23 @@ name: Build Artifact on Release
 
 on:
   push:
-    branches:
-      - main
+    branches: main
     tags:
-      - 'v*'
+      - v*
 
 jobs:
   release_build:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags')
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.6.0
 
       - name: Setup JAVA 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
+          distribution: 'corretto'
           java-version: 17
 
       - name: Cache Gradle and wrapper
@@ -32,16 +32,16 @@ jobs:
       #1
       - name: Decode Keystore
         env:
-          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
           SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
 
         run: |
-          echo $ENCODED_STRING | base64 -d > $SIGNING_KEY_STORE_PATH
-
-      #2
+          echo $ENCODED_STRING > keystore-b64.txt
+          base64 -d keystore-b64.txt > $SIGNING_KEY_STORE_PATH
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      #2
       - name: Build Release apk
         env:
           SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
@@ -49,6 +49,7 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         run: ./gradlew assembleRelease
+
 
       - name: Build Release bundle
         env:
@@ -59,7 +60,7 @@ jobs:
         run: ./gradlew bundleRelease
       #3
       - name: Upload Release Build to Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: release-artifacts
           path: |
@@ -69,8 +70,8 @@ jobs:
       - name: Create Github Release
         uses: softprops/action-gh-release@v1
         with:
+          generate_release_notes: true
+          prerelease: true
           files: |
             app/build/outputs/apk/release/app-release.apk
             app/build/outputs/bundle/release/app-release.aab
-          tag_name: ${{ github.ref }}
-          prerelease: true
