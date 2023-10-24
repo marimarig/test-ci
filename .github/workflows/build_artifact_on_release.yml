@@ -74,5 +74,5 @@ jobs:
           generate_release_notes: true
           prerelease: true
           files: |
-            app/release/app-release.apk
+            app/build/outputs/apk/release/app-release.apk
             app/build/outputs/bundle/release/app-release.aab
