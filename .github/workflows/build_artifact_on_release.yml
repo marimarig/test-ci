@@ -70,8 +70,9 @@ jobs:
       - name: Create Github Release
         uses: softprops/action-gh-release@v0.1.15
         with:
+          token: ${{ secrets.GH_TOKEN }}
           generate_release_notes: true
           prerelease: true
           files: |
-            app/build/outputs/apk/release/app-release.apk
+            app/release/app-release.apk
             app/build/outputs/bundle/release/app-release.aab
