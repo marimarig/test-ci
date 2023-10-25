@@ -11,6 +11,8 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 17
+          distribution: 'adopt'
+          architecture: 'x64'
 
       - name: Checkout code
         uses: actions/checkout@v2
@@ -40,4 +42,3 @@ jobs:
         with:
           name: mapping.txt
           path: app/build/outputs/mapping/release/mapping.txt
-
