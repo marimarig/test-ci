@@ -32,7 +32,7 @@ jobs:
       #1
       - name: Decode Keystore
         env:
-          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64}}
+          ENCODED_STRING: ${{ secrets.BASE62}}
           SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
 
         run: |
