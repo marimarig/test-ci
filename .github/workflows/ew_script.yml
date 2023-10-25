@@ -20,8 +20,10 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Generate Release APK
-        run: ./gradlew assembleRelease
+      - name: Generate Release APK and AAB
+        run: |
+          ./gradlew bundleRelease
+          ./gradlew assembleRelease
 
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
@@ -37,6 +39,11 @@ jobs:
         with:
           name: release.apk
           path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+
+      - uses: actions/upload-artifact@master
+        with:
+          name: release.aab
+          path: app/build/outputs/bundle/release/app-release.aab
 
       - uses: actions/upload-artifact@master
         with:
