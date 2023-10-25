@@ -32,7 +32,7 @@ jobs:
       #1
       - name: Decode Keystore
         env:
-          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
           SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
 
         run: |
@@ -74,5 +74,5 @@ jobs:
           generate_release_notes: true
           prerelease: true
           files: |
-            app/release/app-release.apk
+            app/build/outputs/apk/release/app-release.apk
             app/build/outputs/bundle/release/app-release.aab
